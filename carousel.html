@@ -1,0 +1,191 @@
+<div class="carousel">
+    <div class="item">hello world 0</div>
+    <div class="item">hello world 1</div>
+    <div class="item">hello world 2</div>
+    <div class="item">hello world 3</div>
+    <div class="item">hello world 4</div>
+    <div class="item">hello world 5</div>
+    <div class="item">hello world 6</div>
+    <div class="item">hello world 7</div>
+    <div class="item">hello world 8</div>
+    <div class="item">hello world 3</div>
+    <div class="item">hello world 0</div>
+    <div class="item">hello world 1</div>
+    <div class="item">hello world 2</div>
+    <div class="item">hello world 3</div>
+    <div class="item">hello world 4</div>
+    <div class="item">hello world 5</div>
+    <div class="item">hello world 6</div>
+    <div class="item">hello world 7</div>
+    <div class="item">hello world 8</div>
+    <div class="item">hello world 3</div>
+    <div class="item">hello world 0</div>
+    <div class="item">hello world 1</div>
+    <div class="item">hello world 2</div>
+    <div class="item">hello world 3</div>
+    <div class="item">hello world 4</div>
+    <div class="item">hello world 5</div>
+    <div class="item">hello world 6</div>
+    <div class="item">hello world 7</div>
+    <div class="item">hello world 8</div>
+    <div class="item">hello world 3</div>
+    <div class="item">hello world 0</div>
+    <div class="item">hello world 1</div>
+    <div class="item">hello world 2</div>
+    <div class="item">hello world 3</div>
+    <div class="item">hello world 4</div>
+    <div class="item">hello world 5</div>
+    <div class="item">hello world 6</div>
+    <div class="item">hello world 7</div>
+    <div class="item">hello world 8</div>
+    <div class="item">hello world 3</div>
+    <div class="item">hello world 0</div>
+    <div class="item">hello world 1</div>
+    <div class="item">hello world 2</div>
+    <div class="item">hello world 3</div>
+    <div class="item">hello world 4</div>
+    <div class="item">hello world 5</div>
+    <div class="item">hello world 6</div>
+    <div class="item">hello world 7</div>
+    <div class="item">hello world 8</div>
+    <div class="item">hello world 3</div>
+    <div class="item">hello world 4</div>
+</div>
+
+<button class="prev">prev</button>
+<button class="next">next</button>
+
+<div class="status_2">
+    <div></div>
+</div>
+
+<div class="status">
+    <div></div>
+</div>
+
+<style>
+    .status_2 {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        right: 40px;
+        height: 10px;
+        border-radius: 50px;
+        overflow: hidden;
+        background-color: #f0f0f0;
+        bottom: 70px!important;
+    }
+    .status {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        right: 40px;
+        height: 10px;
+        border-radius: 50px;
+        overflow: hidden;
+        background-color: #f0f0f0;
+    }
+    .status div, .status_2 div {
+        width: 0;
+        height: 100%;
+        border-radius: 50px;
+        background: linear-gradient(45deg, #f0f0f0, blue);
+        transition: .2s linear;
+    }
+    body {
+        font-family: 'Gilroy';
+    }
+
+    .carousel {
+        width: 400px;
+        height: 400px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        overflow: hidden;
+        background-color: #f0f0f0;
+    }
+
+    .carousel .item {
+        position: absolute;
+        left: 0;
+        top: 0rem;
+        right: 0;
+        bottom: 0;
+        background-color: blue;
+        /* display: none; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-size: 30px;
+        display: none;
+    }
+    .active {
+        display: flex!important;
+    }
+</style>
+
+<script>
+    let carousel = document.querySelector('.carousel')
+    let items = document.querySelectorAll('.carousel .item')
+    let prev = document.querySelector('.prev')
+    let next = document.querySelector('.next')
+    let statusDiv = document.querySelector('.status div')
+    let statusTwoDiv = document.querySelector('.status_2 div')
+    let counter = 0
+    let timer = 2000
+    let isPaused = false
+
+    let autoCarousel = setInterval(() => {
+        statusTwoDiv.style.width = 0 + '%'
+        
+        if(!isPaused) {
+            refreshCarousel()
+    
+            if(counter >= items.length - 1) counter = -1
+            counter++
+    
+            items[counter].classList.add('active')
+        }
+
+        let step = 100 / items.length
+        let step_2 = 100 / timer
+        statusDiv.style.width = (counter + 1) * step + '%'
+
+        for(var i = 0; i < timer; i++){
+            statusTwoDiv.style.width = (i + 1) * step_2 + '%'
+        }
+    }, timer)
+
+    carousel.onmouseenter = () => isPaused = !isPaused
+    carousel.onmouseleave = () => isPaused = !isPaused
+
+    items[counter].classList.add('active')
+    
+    // Сбросить классы active
+    let refreshCarousel = () => {
+        for(let item of items) {
+            item.classList.remove('active')
+        }
+    }
+    
+    next.onclick = () => {
+        refreshCarousel()
+
+        if(counter >= items.length - 1) counter = -1
+        counter++
+
+        items[counter].classList.add('active')
+    }
+    
+    prev.onclick = () => {
+        refreshCarousel()
+
+        if(counter <= 0) counter = items.length
+        counter--
+
+        items[counter].classList.add('active')
+    }
+</script>

@@ -1,0 +1,368 @@
+<link rel="stylesheet" href="./css/style.css">
+
+<header>
+    dawdaw
+    <div class="side-left">
+        <div class="search">
+            <div class="serach-img">
+                <img src="./images/search.svg" alt="">
+            </div>
+            <input type="search" placeholder="Search anything">
+        </div>
+    </div>
+    <div class="side-right">
+        <div class="notification">
+            <img src="./images/notification.svg" alt="">
+        </div>
+        <div class="user-block">
+            <div class="left">
+                <div class="user-img">
+
+                </div>
+            </div>
+            <div class="right">
+                <div class="img"></div>
+                <h5>Hachib</h5>
+                <img src="./images/bottom.svg" alt="">
+            </div>
+        </div>
+        <div class="settings">
+            <img src="./images/setings.svg" alt="">
+        </div>
+    </div>
+</header>
+
+
+<aside>
+    <h1><img src="./images/block.png" width="25px"> Dishboard</h1>
+    <div class="select-">
+        <img src="./images/inventary.png" width="25px"> <select name="search" class="select-one">
+            <option value="Invertary" class="select-info"> Invertary</option>
+            <option value="View item" class="select-info">View Item</option>
+            <option value="Add item" class="select-info">Add item</option>
+            <option value="Item groups" class="select-info">Item groups</option>
+            <option value="Summary" class="select-info">Summary</option>
+        </select>
+    </div>
+    <div class="select-">
+        <img src="./images/shop.png" width="25px"> <select name="search" class="select-one">
+            <option value="Purchase" class="select-info"> Purchase</option>
+        </select>
+    </div>
+
+    <div class="icon-words-1">
+        <div class="item">
+            <div class="img-1"></div>
+            <p>Suppliers Return</p>
+        </div>
+
+        <div class="item">
+            <div class="img-3"></div>
+            <p>Invoice</p>
+        </div>
+
+        <div class="item">
+            <div class="img-4"></div>
+            <p>Sales</p>
+        </div>
+
+        <div class="item">
+            <div class="img-5"></div>
+            <p>Bill</p>
+        </div>
+
+        <div class="item">
+            <div class="img-6"></div>
+            <p>Customers</p>
+        </div>
+
+    </div>
+</aside>
+
+<div class="bg"></div>
+
+<div class="widget-form">
+    <img src="./images/x.svg" alt="">
+    <h2>Изменить запись</h2>
+    <form>
+        <input placeholder="text" type="text">
+        <input placeholder="text" type="text">
+        <input placeholder="text" type="text">
+        <input placeholder="text" type="text">
+        <button>Сохранить</button>
+    </form>
+</div>
+
+<main>
+    <div class="main-header">
+        <div class="header-l">
+            <div class="l-icon">
+                <img src="./images/iconfinder_3338924_box_business_tools_gift_packing_parcel_icon_512px.png">
+            </div>
+            <p id="inventory">Inventory Management</p>
+        </div>
+        <div class="header-r">
+            <input class="search-form" type="text" placeholder="HELLO">
+            <select name="Export" id="select-courses"></select>
+            <button>+ Add item</button>
+        </div>
+    </div>
+
+    <div class="item po">
+        <span id="change-status">Статус</span>
+        <span id="">Имя</span>
+        <span id="filter_age">Возраст</span>
+        <span>Курс</span>
+        <span>Время</span>
+        <span>Дата</span>
+        <span>Действия</span>
+    </div>
+    <div class="elements"></div>
+
+    <div class="button-main">
+        <div class="side-left">
+            <p>Showing 1-10 of 1480 entries</p>
+        </div>
+        <div class="side-mid" id="paginate-buttons"></div>
+        <div class="side-right">
+            <span>Show</span>
+            <select name="" id="">
+                <option>10</option>
+                <option>11</option>
+                <option>12</option>
+                <option>13</option>
+                <option>14</option>
+            </select>
+            <span>entries</span>
+        </div>
+
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+let widget_form = document.querySelectorAll('.widget-form')
+let filter_age = document.querySelector('#filter_age')
+let api = 'https://www.wepro.uz/api/application'
+let arr = [] // Все элементы всегда
+let arr_paginate = []
+let elements = document.querySelector('.elements')
+let paginate_buttons = document.querySelectorAll('#paginate-buttons button')
+let search = document.querySelector('.search-form')
+let select_courses = document.getElementById('select-courses')
+let change_status = document.getElementById('change-status')
+let courses = []
+let bool = false
+let bg = document.querySelector('.bg')
+
+document.querySelector('header').onclick = () => {
+    for(let item of widget_form) {
+        item.classList.add('active')
+    }
+    bg.classList.add('active')
+}
+
+for(let item of widget_form) {
+    item.children[0].onclick = () => {
+        item.classList.remove('active')
+        bg.classList.remove('active')
+    }
+}
+
+for(let item of paginate_buttons) {
+    item.onclick = () => {
+        let number = item.innerText
+
+        arr_paginate = arr.slice(number * 10 - 10, number * 10)
+
+        reload(arr_paginate)
+    }
+}
+
+select_courses.addEventListener('change', () => {
+    let value = event.target.value
+    let filtered_arr = arr.filter(item => item.course == value)
+    
+    reload(filtered_arr)
+})
+
+search.onkeyup = () => {
+    let text = event.target.value.toLowerCase()
+    let find_elements = arr.filter(item => item.name.toLowerCase().includes(text))
+
+    reload(find_elements)
+
+    if(!find_elements.length) search.style.borderColor = 'red'
+    else search.style.borderColor = 'green'
+}
+
+axios.get(api)
+    .then(res => {
+        for(let item of res.data) {
+            if(isNaN(item.age) == false) {
+                arr.push(item)
+            } else {
+                item.age = 0
+                arr.push(item)
+            }
+        }
+        
+        arr_paginate = arr.slice(0, 10)
+        reload(arr_paginate)
+
+        let count = arr.length
+        let btn_count = Math.ceil(count / 10)
+        let side_mid = document.querySelector('.side-mid')
+
+        for(let i = 0; i < btn_count; i++) {
+            let btn = document.createElement('button')
+
+            btn.innerText = i + 1
+            btn.classList.add('number')
+
+            side_mid.append(btn)
+        }
+
+        for(let item of res.data) {
+            // Проверка на существование
+            if(courses.includes(item.course)) console.log('Курс уже добавлен')
+            else {
+                // Создаем option внутри select (innerText, value)
+                let option = new Option(item.course, item.course)
+
+                courses.push(item.course)
+                select_courses.append(option)
+            }
+        }
+    })
+    .catch(err => {
+        console.log(err);
+    })
+
+let reload = (arg) => {
+    // Очищаем экран от заявок, чтобы показать новые
+    elements.innerHTML = ''
+    // Меняем цифру
+    inventory.innerText = 'Inventory Management ' + arg.length
+
+    for(let item of arg) {
+        let div = document.createElement('div')
+        let input = document.createElement('input')
+        let span = document.createElement('span')
+        let div_img_block = document.createElement('div')
+        let p1 = document.createElement('p')
+        let p2 = document.createElement('p')
+        let p3 = document.createElement('p')
+        let p4 = document.createElement('p')
+        let div_box_in_item = document.createElement('div')
+        let div_one = document.createElement('div')
+        let div_two = document.createElement('div')
+
+        input.setAttribute('type', 'checkbox')
+        input.setAttribute('onchange', 'patch()')
+        div_two.setAttribute('onclick', 'put()')
+
+        if(item.isDone) input.setAttribute('checked', 'checked')
+
+        div.classList.add('item')
+        div.id = item._id
+        span.innerText = item.name
+        p1.innerText = item.age
+        p2.innerText = item.course
+        p3.innerText = item.time
+        p4.innerText = item.date
+
+        div_box_in_item.classList.add('box_in_item')
+        div_one.classList.add('two_img_box', 'one')
+        div_two.classList.add('two_img_box', 'two')
+        div_img_block.classList.add('img_block')
+
+        div_box_in_item.append(div_one, div_two)
+        div.append(input, span, div_img_block, p1, p2, p3, p4, div_box_in_item)
+        elements.append(div)
+    }
+}
+
+let patch = () => {
+    let id = event.target.parentNode.id
+    let item = arr.filter(item => item._id == id)[0]
+    let idx = arr.indexOf(item)
+
+    arr[idx].isDone = !arr[idx].isDone
+
+    axios.patch(api, { id: id, body: arr[idx] })
+        .then(res => {
+            console.log(res.data)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+}
+
+let put = () => {
+    let id = event.target.parentNode.parentNode.id
+    let item = arr.filter(item => item._id == id)[0]
+    let idx = arr.indexOf(item)
+    
+    axios.put(api, {id: id})
+        .then(res => {
+            if(typeof res.data == 'object') {
+                let id = res.data._id
+                let find = arr.filter(item => item._id == id)[0]
+                let idx = arr.indexOf(find)
+                
+                arr.splice(idx, 1)
+                reload(arr)
+            }
+        })
+        .catch(err => {
+            alert('Элемент не удалился с сервера')
+        })
+}
+
+// 0 - все включено
+// 1 - только галочки
+// 2 - только не галочки
+let boolean_pro = 0
+
+change_status.onclick = () => {
+    let filtered_arr = []
+
+    if(boolean_pro == 0) {
+        boolean_pro = 1
+        filtered_arr = arr.filter(item => item.isDone == true)
+    }
+    else if(boolean_pro == 1) {
+        boolean_pro = 2
+        filtered_arr = arr.filter(item => item.isDone == false)
+    }
+    else if(boolean_pro == 2) {
+        boolean_pro = 0
+        filtered_arr = arr
+    }
+
+    reload(filtered_arr)
+}
+
+
+filter_age.onclick = () => {
+    let filtered_arr = arr
+
+    if(!bool) {
+        filtered_arr.sort((a, b) => {
+            return a.age - b.age;
+        })
+
+        bool = true
+    } else {
+        filtered_arr.sort((a, b) => {
+            return b.age - a.age
+        })
+        
+        bool = false
+    }
+
+    reload(filtered_arr)
+}
+
+</script>
